@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -15,7 +16,7 @@ public class UserController {
     private final HashMap<Integer, User> users = new HashMap<>();
 
     @PostMapping("/users")
-    public User createUser(@RequestBody User user) throws ValidationException {
+    public User createUser(@Valid @RequestBody User user) throws ValidationException {
         validate(user.getEmail(), user.getLogin(), user.getBirthday());
         String name = validateName(user.getName(), user.getLogin());
         user.setName(name);
@@ -26,7 +27,7 @@ public class UserController {
     }
 
     @PutMapping("/users")
-    public User updateUser(@RequestBody User user) throws ValidationException {
+    public User updateUser(@Valid @RequestBody User user) throws ValidationException {
         validate(user.getEmail(), user.getLogin(), user.getBirthday());
         String name = validateName(user.getName(), user.getLogin());
         user.setName(name);
@@ -45,13 +46,13 @@ public class UserController {
     }
 
     private void validate(String email, String login, LocalDate birthday) throws ValidationException {
-        if (login.contains(" ") || login.isBlank()) {
+        if (login == null || login.contains(" ") || login.isBlank()) {
             throw new ValidationException();
         }
         if (birthday.isAfter(LocalDate.now())) {
             throw new ValidationException();
         }
-        if (email.isBlank() || !email.contains("@")) {
+        if (email == null || email.isBlank() || !email.contains("@")) {
             throw new ValidationException();
         }
     }

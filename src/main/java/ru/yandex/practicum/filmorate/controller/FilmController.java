@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,7 +21,7 @@ public class FilmController {
     private static final Integer maxSizeOfDescription = 200;
 
     @PostMapping("/films")
-    public Film addFilm(@RequestBody Film film) throws ValidationException {
+    public Film addFilm(@Valid @RequestBody Film film) throws ValidationException {
         validate(film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration());
         film.setId(++id);
         films.put(film.getId(), film);
@@ -29,7 +30,7 @@ public class FilmController {
     }
 
     @PutMapping("/films")
-    public Film updateFilm(@RequestBody Film film) throws ValidationException {
+    public Film updateFilm(@Valid @RequestBody Film film) throws ValidationException {
         validate(film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration());
         if (films.containsKey(film.getId())) {
             films.put(film.getId(), film);
@@ -46,7 +47,7 @@ public class FilmController {
     }
 
     private void validate(String name, String description, LocalDate releaseDate, Integer duration) throws ValidationException {
-        if (name.isBlank()) {
+        if (name == null || name.isBlank()) {
             throw new ValidationException();
         }
         if (description.length() > maxSizeOfDescription) {
